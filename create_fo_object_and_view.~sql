@@ -4,7 +4,7 @@ DROP TABLE fo_table_sample;
 DROP TABLE fo_table_sample_stage;
 DROP SEQUENCE stage_seq;
 
----- create "FO" table.  Used a mix of data types and NN statuses
+---- create objects
 CREATE TABLE fo_table_sample 
  (job_id NUMBER NOT NULL,
   fk_1   NUMBER,
@@ -15,7 +15,7 @@ CREATE TABLE fo_table_sample
   attr_4 RAW(16),
   attr_5 VARCHAR2(100));
 
--- insert 5000 rows.  Don't pay too much attention to the code here - its just random data!
+-- insert 5000 rows
 INSERT INTO fo_table_sample
 SELECT ROWNUM + 10000                                               AS job_id,
        TRUNC(dbms_random.value(low => 20000, HIGH => 50000))        AS fk_1,
