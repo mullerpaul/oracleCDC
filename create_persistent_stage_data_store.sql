@@ -9,18 +9,18 @@ SELECT 0 AS fo_table_sample_sk,
   FROM fo_table_sample_extract_vw a
  WHERE 1=0;
 
-ALTER TABLE fo_table_sample_stage
+ALTER TABLE fo_table_sample_stage    -- These columns are NN. Could do this in the create above.
 MODIFY (fo_table_sample_sk NOT NULL,
         load_date          NOT NULL, 
         source_name        NOT NULL,
         business_key_hash  NOT NULL,
         attr_hash          NOT NULL);
         
-ALTER TABLE fo_table_sample_stage
+ALTER TABLE fo_table_sample_stage    -- These columns only have to be 32 bytes long to hold MD5sums.  Could do this in the create above.
 MODIFY (business_key_hash VARCHAR2(32),
         attr_hash         VARCHAR2(32));
 
-ALTER TABLE fo_table_sample_stage
+ALTER TABLE fo_table_sample_stage    -- SK (synthetic key) is unique in this table.  This allows for ID collisions from multiple sources.
 ADD CONSTRAINT fo_table_sample_stage_sk
 PRIMARY KEY (fo_table_sample_sk);        
 
@@ -43,11 +43,12 @@ SELECT stage_seq.nextval AS fo_table_sample_sk,
 
 COMMIT;
 
+-- this index helps incremental load performance.  Build it now after the load.
 CREATE INDEX fo_table_sample_stage_idx01
-ON fo_table_sample_stage
-(business_key_hash, attr_hash );
+ON fo_table_sample_stage (business_key_hash, attr_hash);
 
---- now lets add 100 new records in "FO" and update a few old ones.
+--- now lets do some DML to the FO table.
+--- add 100 new records and update a few old ones.
 INSERT INTO fo_table_sample
 SELECT ROWNUM + 30000                                               AS job_id,
        TRUNC(dbms_random.value(low => 20000, HIGH => 50000))        AS fk_1,
