@@ -79,7 +79,7 @@ UPDATE fo_table_sample
  WHERE job_id = 13000;
 
 UPDATE fo_table_sample
-   SET attr_5 = 'Paul_was_here'
+   SET attr_5 = 'final version'
  WHERE job_id = 14000;
  
 COMMIT;
@@ -150,3 +150,47 @@ SELECT fo_table_sample_sk,
                attr_hash,
                RANK() OVER (PARTITION BY business_key_hash ORDER BY load_date DESC) AS load_date_rank  --could use DENSE_RANK or MAX functions to do the same thing
           FROM fo_table_sample_stage);
+
+
+--- we can also build a view to see version current at any given point in time!  (p.i.t.)
+--- I hardcoded a datetime literal in the view text.  In real life, we'd probably use a  
+--- session context in the view to get the desired value in.
+CREATE OR REPLACE VIEW fo_table_sample_stage_pit_vw
+AS
+SELECT fo_table_sample_sk,
+       job_id,
+       fk_1,
+       fk_2,
+       attr_1,
+       attr_2,
+       attr_3,
+       attr_4,
+       attr_5,
+       load_date,
+       source_name,
+       business_key_hash,
+       attr_hash,
+       CASE WHEN load_date_rank = 1 THEN 'Y' ELSE 'N' END AS current_version_pit
+  FROM (SELECT fo_table_sample_sk,
+               job_id,
+               fk_1,
+               fk_2,
+               attr_1,
+               attr_2,
+               attr_3,
+               attr_4,
+               attr_5,
+               load_date,
+               source_name,
+               business_key_hash,
+               attr_hash,
+               RANK() OVER (PARTITION BY business_key_hash ORDER BY load_date DESC) AS load_date_rank  --could use DENSE_RANK or MAX functions to do the same thing
+          FROM fo_table_sample_stage
+         WHERE load_date <= to_date('2016-Feb-15 16:00','YYYY-Mon-DD hh24:mi'));
+
+
+SELECT * FROM fo_table_sample_stage_curr_vw
+ WHERE job_id = 14000;
+
+SELECT * FROM fo_table_sample_stage_pit_vw
+ WHERE job_id = 14000;
