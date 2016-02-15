@@ -1,0 +1,15 @@
+CREATE USER cdc_extract_test
+IDENTIFIED BY test
+QUOTA 20M ON USERS
+DEFAULT TABLESPACE USERS;
+
+
+GRANT CREATE SESSION, CREATE VIEW, CREATE SEQUENCE, CREATE SYNONYM, CREATE TABLE 
+TO cdc_extract_test;
+
+GRANT EXECUTE ON sys.dbms_crypto 
+TO cdc_extract_test;
+
+GRANT EXECUTE ON sys.dbms_lock
+TO cdc_extract_test;
+
