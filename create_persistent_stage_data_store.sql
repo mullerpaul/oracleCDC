@@ -169,8 +169,7 @@ SELECT fo_table_sample_sk,
        load_date,
        source_name,
        business_key_hash,
-       attr_hash,
-       CASE WHEN load_date_rank = 1 THEN 'Y' ELSE 'N' END AS current_version_pit
+       attr_hash
   FROM (SELECT fo_table_sample_sk,
                job_id,
                fk_1,
@@ -186,7 +185,8 @@ SELECT fo_table_sample_sk,
                attr_hash,
                RANK() OVER (PARTITION BY business_key_hash ORDER BY load_date DESC) AS load_date_rank  --could use DENSE_RANK or MAX functions to do the same thing
           FROM fo_table_sample_stage
-         WHERE load_date <= to_date('2016-Feb-15 16:00','YYYY-Mon-DD hh24:mi'));
+         WHERE load_date <= to_date('2016-Feb-15 16:00','YYYY-Mon-DD hh24:mi'))
+ WHERE load_date_rank = 1;
 
 
 SELECT * FROM fo_table_sample_stage_curr_vw
