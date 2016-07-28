@@ -12,7 +12,7 @@ SELECT 0 AS person_change_capture_sk,
 
 CREATE SEQUENCE person_change_capture_seq;
 
-CREATE OR REPLACE PROCEDURE load_person_change_capture
+CREATE OR REPLACE PROCEDURE load_person_change_capture(pi_source IN VARCHAR2)
 AS
 BEGIN    
   INSERT INTO person_change_capture
@@ -23,12 +23,16 @@ BEGIN
        (SELECT NULL
           FROM person_change_capture s
          WHERE s.source_key_hash = l.source_key_hash
-           AND s.source_attr_hash = l.source_attr_hash);
+           AND s.source_attr_hash = l.attribute_hash);
            
   COMMIT;
 END;
 /
-  
+
+
+grant select on person_change_capture to public;
+grant execute on load_person_change_capture to public;
+
 INSERT INTO lego_refresh
  (object_name,source_name,refresh_method,refresh_schedule,
   refresh_group,refresh_dependency_order,refresh_on_or_after_time,

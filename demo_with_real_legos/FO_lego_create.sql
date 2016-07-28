@@ -84,7 +84,7 @@ DECLARE
               AND bo.enterprise_fk   = cifr.enterprise_fk) dnr
     WHERE p.person_id    = u.person_fk(+)
       AND p.person_id    = c.person_fk(+)
-      AND c.candidate_id = dnr.candidate_id(+)}';
+      AND c.candidate_id = dnr.candidate_id(+))}';
   
 BEGIN
   UPDATE lego_refresh
