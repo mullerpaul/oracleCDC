@@ -9,6 +9,10 @@ SELECT 0 AS person_change_capture_sk,
   FROM person_iqp1 a  --person lego synonym
  WHERE 1=0;
          
+CREATE INDEX person_change_capture_ix01
+ON person_change_capture
+(source_key_hash, source_attr_hash)
+/
 
 CREATE SEQUENCE person_change_capture_seq;
 
