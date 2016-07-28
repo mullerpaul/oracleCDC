@@ -6,11 +6,11 @@ SELECT 0 AS person_change_capture_sk,
        'USPROD' AS source_name,
        ora_hash('x') AS source_key_hash,
        ora_hash('x') AS source_attr_hash
-  FROM person_iqp1   --person lego synonym
+  FROM person_iqp1 a  --person lego synonym
  WHERE 1=0;
          
 
-CREATE SYNONYM person_change_capture_seq;
+CREATE SEQUENCE person_change_capture_seq;
 
 CREATE OR REPLACE PROCEDURE load_person_change_capture
 AS

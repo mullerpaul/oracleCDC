@@ -11,8 +11,8 @@ VALUES
   ('LEGO_PERSON_CDC_DEMO','USPROD','SQL TOGGLE','DAILY',30,1, TRUNC(SYSDATE) + 8/24,
   'x','PERSON_CDC_DEMO_IQP1','PERSON_CDC_DEMO_IQP2','PERSON_CDC_DEMO_IQP');
 
-UPDATE lego_refresh
-   SET refresh_sql = q'{SELECT bus_org_id, person_id, candidate_id, 
+DECLARE
+  lv_refresh_Sql lego_Refresh.refresh_sql%TYPE := q'{SELECT bus_org_id, person_id, candidate_id, 
        user_name, last_name, first_name, middle_name, display_name,
        title, contact_info_id, udf_collection_id, candidate_udf_collection_id,
        do_not_rehire_flag,
@@ -84,9 +84,16 @@ UPDATE lego_refresh
               AND bo.enterprise_fk   = cifr.enterprise_fk) dnr
     WHERE p.person_id    = u.person_fk(+)
       AND p.person_id    = c.person_fk(+)
-      AND c.candidate_id = dnr.candidate_id(+)}'
- WHERE object_name = 'LEGO_PERSON_CDC_DEMO' 
-   AND source_name = 'USPROD';
+      AND c.candidate_id = dnr.candidate_id(+)}';
+  
+BEGIN
+  UPDATE lego_refresh
+     SET refresh_sql = lv_refresh_Sql
+   WHERE object_name = 'LEGO_PERSON_CDC_DEMO' 
+     AND source_name = 'USPROD';
    
-COMMIT;
+  COMMIT;
+END;
+/
+  
 
